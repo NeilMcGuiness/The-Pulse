@@ -1,0 +1,217 @@
+#N canvas 271 108 884 608 10;
+#X obj 156 125 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 121 154 select 0 1;
+#X msg 121 188 252;
+#X msg 158 188 250;
+#X msg 230 181 248;
+#X obj 230 151 metro 20.8333;
+#X floatatom 202 119 5 0 0 0 - - -;
+#X obj 159 94 expr (60000/$f1/24);
+#X floatatom 157 43 5 0 0 0 - - -;
+#X text 99 42 BPM-->;
+#X text 201 43 BPM input here;
+#X text 304 180 When switched on [midiout] sends decimal 248 (clock
+pulse) and decimal 250 (start message) thanks to [sel]. When turned
+off [sel] ensures that decimal 252 (stop) is sent to [midiout] which
+;
+#X obj 220 248 midiout;
+#X obj 157 -30 t b b;
+#X obj 156 -6 timer;
+#X obj 145 -79 bng 30 250 50 0 empty empty empty 0 -6 0 20 -262144
+-1 -1;
+#X obj 156 19 expr 60000 / $f1;
+#X text 176 -84 TAP TEMPO HERE;
+#X text 260 20 Miliseconds (from timer) into BPM;
+#X obj 419 277 adc~ 3;
+#X obj 419 311 snapshot~;
+#X obj 500 245 loadbang;
+#X obj 418 471 print BAM!;
+#X obj 465 378 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 418 405 spigot;
+#X obj 418 374 sel 1;
+#X obj 418 438 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 516 371 sel 1;
+#X obj 516 397 spigot;
+#X obj 516 430 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 580 356 sel 0;
+#X obj 580 385 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 465 352 loadbang;
+#X text 55 349 Thresholding gate system May be a simpler way of doing
+this;
+#X obj 518 469 print Release!;
+#X obj 327 465 s tap;
+#X obj 25 -95 r tap;
+#X obj 89 92 loadbang;
+#X obj 492 281 metro 1;
+#N canvas 0 22 1040 672 superTT 0;
+#X obj 307 139 t b b;
+#X obj 307 183 timer;
+#N canvas 0 22 450 300 (subpatch) 0;
+#X array \$0-tt 6 float 2;
+#X coords 0 1000 6 -1 40 50 1;
+#X restore 501 202 graph;
+#X obj 531 321 f;
+#X obj 557 378 + 1;
+#X obj 530 350 t f f;
+#X obj 449 376 tabwrite \$0-tt;
+#X obj 642 234 loadbang;
+#X obj 308 364 until;
+#X msg 355 397 0;
+#X obj 308 430 f;
+#X obj 308 512 tabread \$0-tt;
+#X obj 308 541 + 0;
+#X obj 308 462 t f f;
+#X obj 335 489 + 1;
+#X obj 308 567 t f f;
+#X obj 220 472 f;
+#X obj 308 300 t b b b;
+#X msg 388 396 0;
+#X obj 307 223 t b b f b;
+#X obj 220 612 expr 60000 / $f1;
+#X obj 307 92 inlet bang;
+#X obj 96 673 outlet ms;
+#X obj 220 671 outlet bpm;
+#X obj 640 407 sel 6;
+#X msg 308 339 6;
+#X obj 220 498 / 6;
+#X msg 602 274 0;
+#X text 639 307 This is actually a simple wrap around. the loadbang
+starts this at 0 so the index Being written to is 0 \, then this architecture
+increments that number with each tap and [sel 6] ensures that the number
+is 0 again when we reach 6 taps.;
+#X text 353 195 the float gets written to the array;
+#X text 383 450 Again this complicated architecture just increments
+numbers 0 - 5 (the [until] object outputting 6 bangs) which reads from
+the array and then...;
+#X text 382 540 ... sums them together here \, which gets divided by
+6 ***;
+#X text 60 460 *** over here giving us our average timing.;
+#X connect 0 0 1 0;
+#X connect 0 1 1 1;
+#X connect 1 0 19 0;
+#X connect 3 0 5 0;
+#X connect 4 0 24 0;
+#X connect 5 0 6 1;
+#X connect 5 1 4 0;
+#X connect 7 0 27 0;
+#X connect 8 0 10 0;
+#X connect 9 0 10 1;
+#X connect 10 0 13 0;
+#X connect 11 0 12 0;
+#X connect 12 0 15 0;
+#X connect 13 0 11 0;
+#X connect 13 1 14 0;
+#X connect 14 0 10 1;
+#X connect 15 0 16 1;
+#X connect 15 1 12 1;
+#X connect 16 0 26 0;
+#X connect 17 0 25 0;
+#X connect 17 1 9 0;
+#X connect 17 2 18 0;
+#X connect 18 0 12 1;
+#X connect 19 0 16 0;
+#X connect 19 1 17 0;
+#X connect 19 2 6 0;
+#X connect 19 3 3 0;
+#X connect 20 0 23 0;
+#X connect 21 0 0 0;
+#X connect 24 0 27 0;
+#X connect 24 1 3 1;
+#X connect 25 0 8 0;
+#X connect 26 0 20 0;
+#X connect 26 0 22 0;
+#X connect 27 0 3 1;
+#X restore 379 -52 pd superTT;
+#X floatatom 436 -15 10 0 0 3 bpm - -;
+#X obj 10 -37 counter;
+#X obj -16 9 < 6;
+#X obj 28 -69 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj -17 62 spigot;
+#X floatatom -5 36 5 0 0 0 - - -;
+#X obj 43 8 > 5;
+#X floatatom 68 31 5 0 0 0 - - -;
+#X obj 10 -14 + 1;
+#X text 285 93 60000/ BPM gives in milliseconds which then needs to
+be divided by 24 to qive quater frames.;
+#X obj 61 64 spigot;
+#X floatatom 106 7 5 0 0 0 - - -;
+#X floatatom -5 141 5 0 0 0 - - -;
+#X floatatom 63 149 5 0 0 0 - - -;
+#X obj 266 -40 > 1500;
+#X obj 265 -15 sel 1;
+#X text -70 191 FOR CONFUSING CODE ABOVE: Basically the counter determines
+how many onsets have been recorded and if it's less than 6 (the number
+that we're averaging) than the immediate difference is being output
+to the midi clock so that we don't have to wait for 6 at the start.
+However when 6 have been recorded we switch to the more reliable averaged
+tempo inference. The counter is reset if there hasn't been an onset
+for over 1.5 seconds.;
+#X obj 419 346 > 0.5;
+#X obj 517 343 < 0.2;
+#X connect 0 0 1 0;
+#X connect 0 0 5 0;
+#X connect 1 0 2 0;
+#X connect 1 1 3 0;
+#X connect 2 0 12 0;
+#X connect 3 0 12 0;
+#X connect 4 0 12 0;
+#X connect 5 0 4 0;
+#X connect 6 0 5 1;
+#X connect 7 0 6 0;
+#X connect 8 0 44 0;
+#X connect 13 0 14 0;
+#X connect 13 1 14 1;
+#X connect 14 0 16 0;
+#X connect 14 0 51 0;
+#X connect 14 0 54 0;
+#X connect 15 0 13 0;
+#X connect 15 0 39 0;
+#X connect 15 0 41 0;
+#X connect 16 0 8 0;
+#X connect 19 0 20 0;
+#X connect 20 0 57 0;
+#X connect 20 0 58 0;
+#X connect 21 0 38 0;
+#X connect 23 0 24 1;
+#X connect 23 0 30 0;
+#X connect 24 0 26 0;
+#X connect 25 0 24 0;
+#X connect 26 0 22 0;
+#X connect 26 0 23 0;
+#X connect 26 0 35 0;
+#X connect 27 0 28 0;
+#X connect 28 0 29 0;
+#X connect 29 0 23 0;
+#X connect 29 0 31 0;
+#X connect 29 0 34 0;
+#X connect 30 0 31 0;
+#X connect 31 0 28 1;
+#X connect 32 0 23 0;
+#X connect 36 0 15 0;
+#X connect 36 0 41 0;
+#X connect 37 0 0 0;
+#X connect 38 0 20 0;
+#X connect 39 1 40 0;
+#X connect 40 0 50 0;
+#X connect 41 0 48 0;
+#X connect 42 0 45 0;
+#X connect 42 0 44 1;
+#X connect 43 0 41 3;
+#X connect 44 0 7 0;
+#X connect 44 0 52 0;
+#X connect 46 0 47 0;
+#X connect 46 0 50 1;
+#X connect 48 0 42 0;
+#X connect 48 0 46 0;
+#X connect 50 0 7 0;
+#X connect 50 0 53 0;
+#X connect 54 0 55 0;
+#X connect 55 0 43 0;
+#X connect 57 0 25 0;
+#X connect 58 0 27 0;
